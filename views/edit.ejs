@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Post — Whispr</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #13131a;
+            --border: #1e1e2e;
+            --accent: #7c6aff;
+            --accent2: #ff6ab0;
+            --text: #e8e8f0;
+            --muted: #6b6b80;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .bg-glow {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-glow::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(ellipse, rgba(124, 106, 255, 0.15) 0%, transparent 70%);
+            animation: drift1 12s ease-in-out infinite alternate;
+        }
+
+        .bg-glow::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            right: -10%;
+            width: 55%;
+            height: 55%;
+            background: radial-gradient(ellipse, rgba(255, 106, 176, 0.1) 0%, transparent 70%);
+            animation: drift2 14s ease-in-out infinite alternate;
+        }
+
+        @keyframes drift1 {
+            from {
+                transform: translate(0, 0);
+            }
+
+            to {
+                transform: translate(5%, 8%);
+            }
+        }
+
+        @keyframes drift2 {
+            from {
+                transform: translate(0, 0);
+            }
+
+            to {
+                transform: translate(-5%, -8%);
+            }
+        }
+
+        .card {
+            position: relative;
+            z-index: 5;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem 2.8rem;
+            width: 100%;
+            max-width: 520px;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #7c6aff, #ff6ab0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem;
+            display: block;
+            text-decoration: none;
+        }
+
+        .card h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .card p {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 1.8rem;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 140px;
+            padding: 1rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+            margin-bottom: 1.2rem;
+        }
+
+        textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .btn-save {
+            flex: 1;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, var(--accent), #9b6aff);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 20px rgba(124, 106, 255, 0.3);
+        }
+
+        .btn-save:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 35px rgba(124, 106, 255, 0.5);
+        }
+
+        .btn-cancel {
+            padding: 0.75rem 1.4rem;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-cancel:hover {
+            border-color: var(--muted);
+            color: var(--text);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-glow"></div>
+
+    <div class="card">
+        <a class="logo" href="/profile">Whispr</a>
+        <h1>Edit your whisper ✏️</h1>
+        <p>Update your post below. Changes are saved immediately.</p>
+
+        <form action="/edit/<%= post._id %>" method="post">
+            <textarea name="content" required><%= post.content %></textarea>
+            <div class="actions">
+                <button class="btn-save" type="submit">Save Changes</button>
+                <a class="btn-cancel" href="/profile">Cancel</a>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

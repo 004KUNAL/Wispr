@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whispr — Share Your Thoughts</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta name="description"
+        content="Whispr is a platform to share your feelings, thoughts, emotions and ideas with the world. Express yourself freely.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #13131a;
+            --border: #1e1e2e;
+            --accent: #7c6aff;
+            --accent2: #ff6ab0;
+            --text: #e8e8f0;
+            --muted: #6b6b80;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated gradient background */
+        .bg-glow {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-glow::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 60%;
+            height: 60%;
+            background: radial-gradient(ellipse, rgba(124, 106, 255, 0.18) 0%, transparent 70%);
+            animation: drift1 12s ease-in-out infinite alternate;
+        }
+
+        .bg-glow::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            right: -10%;
+            width: 55%;
+            height: 55%;
+            background: radial-gradient(ellipse, rgba(255, 106, 176, 0.14) 0%, transparent 70%);
+            animation: drift2 14s ease-in-out infinite alternate;
+        }
+
+        @keyframes drift1 {
+            from {
+                transform: translate(0, 0);
+            }
+
+            to {
+                transform: translate(5%, 8%);
+            }
+        }
+
+        @keyframes drift2 {
+            from {
+                transform: translate(0, 0);
+            }
+
+            to {
+                transform: translate(-5%, -8%);
+            }
+        }
+
+        /* Navbar */
+        nav {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 4rem;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn-outline {
+            padding: 0.5rem 1.4rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary {
+            padding: 0.5rem 1.4rem;
+            background: linear-gradient(135deg, var(--accent), #9b6aff);
+            border-radius: 8px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            box-shadow: 0 0 20px rgba(124, 106, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 30px rgba(124, 106, 255, 0.5);
+        }
+
+        /* Hero */
+        .hero {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            padding: 7rem 2rem 5rem;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 1rem;
+            background: rgba(124, 106, 255, 0.12);
+            border: 1px solid rgba(124, 106, 255, 0.3);
+            border-radius: 999px;
+            font-size: 0.8rem;
+            color: #a89aff;
+            margin-bottom: 2rem;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .hero-badge span {
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .hero h1 {
+            font-size: clamp(2.8rem, 7vw, 5.5rem);
+            font-weight: 900;
+            line-height: 1.08;
+            letter-spacing: -2px;
+            margin-bottom: 1.5rem;
+            animation: fadeUp 0.7s ease 0.1s both;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--muted);
+            max-width: 520px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+            font-weight: 400;
+            animation: fadeUp 0.7s ease 0.2s both;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeUp 0.7s ease 0.3s both;
+        }
+
+        .btn-hero {
+            padding: 0.85rem 2.2rem;
+            background: linear-gradient(135deg, var(--accent), #9b6aff);
+            border-radius: 12px;
+            color: #fff;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 700;
+            transition: all 0.25s;
+            box-shadow: 0 0 30px rgba(124, 106, 255, 0.4);
+        }
+
+        .btn-hero:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 50px rgba(124, 106, 255, 0.6);
+        }
+
+        .btn-hero-ghost {
+            padding: 0.85rem 2.2rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.25s;
+        }
+
+        .btn-hero-ghost:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Preview cards */
+        .preview-section {
+            position: relative;
+            z-index: 5;
+            padding: 2rem 2rem 6rem;
+            display: flex;
+            justify-content: center;
+            gap: 1.2rem;
+            flex-wrap: wrap;
+            animation: fadeUp 0.8s ease 0.4s both;
+        }
+
+        .preview-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.4rem 1.6rem;
+            width: 260px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .preview-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        .preview-card:nth-child(2) {
+            transform: translateY(-12px);
+        }
+
+        .preview-card:nth-child(2):hover {
+            transform: translateY(-18px);
+        }
+
+        .card-author {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .av1 {
+            background: linear-gradient(135deg, #7c6aff, #9b6aff);
+        }
+
+        .av2 {
+            background: linear-gradient(135deg, #ff6ab0, #ff8c6a);
+        }
+
+        .av3 {
+            background: linear-gradient(135deg, #6affe0, #6ab0ff);
+            color: #000;
+        }
+
+        .card-username {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #a89aff;
+        }
+
+        .card-text {
+            font-size: 0.85rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .card-likes {
+            margin-top: 1rem;
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+
+        .card-likes span {
+            color: #ff6ab0;
+        }
+
+        /* Features */
+        .features {
+            position: relative;
+            z-index: 5;
+            padding: 4rem 4rem 6rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .features h2 {
+            text-align: center;
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            letter-spacing: -1px;
+        }
+
+        .features-sub {
+            text-align: center;
+            color: var(--muted);
+            margin-bottom: 3rem;
+            font-size: 1rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.8rem;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            font-size: 0.85rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        /* CTA Banner */
+        .cta-banner {
+            position: relative;
+            z-index: 5;
+            margin: 0 4rem 6rem;
+            background: linear-gradient(135deg, rgba(124, 106, 255, 0.15), rgba(255, 106, 176, 0.1));
+            border: 1px solid rgba(124, 106, 255, 0.25);
+            border-radius: 24px;
+            padding: 4rem 3rem;
+            text-align: center;
+        }
+
+        .cta-banner h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            letter-spacing: -0.5px;
+        }
+
+        .cta-banner p {
+            color: var(--muted);
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        /* Footer */
+        footer {
+            position: relative;
+            z-index: 5;
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        footer span {
+            color: var(--accent);
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 1.2rem 1.5rem;
+            }
+
+            .features {
+                padding: 3rem 1.5rem;
+            }
+
+            .cta-banner {
+                margin: 0 1rem 3rem;
+                padding: 3rem 1.5rem;
+            }
+
+            .preview-card:nth-child(3) {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-glow"></div>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">Whispr</div>
+        <div class="nav-links">
+            <a class="btn-outline" href="/login">Log In</a>
+            <a class="btn-primary" href="/signup">Sign Up Free</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-badge">
+            <span></span>
+            A safe space for your thoughts
+        </div>
+        <h1>
+            Your thoughts<br>
+            deserve to be <span class="gradient-text">heard.</span>
+        </h1>
+        <p>
+            Whispr is a platform where you can freely share your feelings, emotions, ideas and stories — with people who
+            actually listen.
+        </p>
+        <div class="hero-cta">
+            <a class="btn-hero" href="/signup">Start Sharing →</a>
+            <a class="btn-hero-ghost" href="/login">I have an account</a>
+        </div>
+    </section>
+
+    <!-- Preview Cards -->
+    <div class="preview-section">
+        <div class="preview-card">
+            <div class="card-author">
+                <div class="avatar av1">AK</div>
+                <span class="card-username">@aarav_k</span>
+            </div>
+            <p class="card-text">"Sometimes the bravest thing you can do is just keep going, even when everything feels
+                heavy."</p>
+            <div class="card-likes">❤️ <span>142</span> likes</div>
+        </div>
+        <div class="preview-card">
+            <div class="card-author">
+                <div class="avatar av2">SR</div>
+                <span class="card-username">@sara_r</span>
+            </div>
+            <p class="card-text">"I finally told someone how I really felt today. It was terrifying. It was also the
+                most freeing thing I've ever done."</p>
+            <div class="card-likes">❤️ <span>289</span> likes</div>
+        </div>
+        <div class="preview-card">
+            <div class="card-author">
+                <div class="avatar av3">MJ</div>
+                <span class="card-username">@mjay</span>
+            </div>
+            <p class="card-text">"3am thoughts hit different. The world is quiet and your mind is the loudest thing in
+                the room."</p>
+            <div class="card-likes">❤️ <span>97</span> likes</div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <section class="features">
+        <h2>Why Whispr?</h2>
+        <p class="features-sub">A place built for real human expression.</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">💬</div>
+                <h3>Express Freely</h3>
+                <p>Share what's on your mind without judgment. Your words matter here.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">❤️</div>
+                <h3>Feel Connected</h3>
+                <p>Like and engage with posts from people who feel exactly what you feel.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">✏️</div>
+                <h3>Own Your Story</h3>
+                <p>Edit or remove your posts anytime. You're always in control of your voice.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Safe & Private</h3>
+                <p>Your account is yours. Only you can edit or delete what you post.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Banner -->
+    <div class="cta-banner">
+        <h2>Ready to share your story?</h2>
+        <p>Join thousands of people expressing themselves every day.</p>
+        <a class="btn-hero" href="/signup">Create Your Account →</a>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        Made with <span>♥</span> · Whispr © 2025
+    </footer>
+
+</body>
+
+</html>

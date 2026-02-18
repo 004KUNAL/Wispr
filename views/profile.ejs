@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed — Whispr</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0a0a0f;
+            --surface: #13131a;
+            --surface2: #1a1a24;
+            --border: #1e1e2e;
+            --accent: #7c6aff;
+            --accent2: #ff6ab0;
+            --text: #e8e8f0;
+            --muted: #6b6b80;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* Animated glow background */
+        .bg-glow {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-glow::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: -10%;
+            width: 55%;
+            height: 55%;
+            background: radial-gradient(ellipse, rgba(124, 106, 255, 0.12) 0%, transparent 70%);
+            animation: drift1 14s ease-in-out infinite alternate;
+        }
+
+        .bg-glow::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            right: -10%;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(ellipse, rgba(255, 106, 176, 0.09) 0%, transparent 70%);
+            animation: drift2 16s ease-in-out infinite alternate;
+        }
+
+        @keyframes drift1 {
+            from {
+                transform: translate(0, 0);
+            }
+
+            to {
+                transform: translate(5%, 8%);
+            }
+        }
+
+        @keyframes drift2 {
+            from {
+                transform: translate(0, 0);
+            }
+
+            to {
+                transform: translate(-5%, -8%);
+            }
+        }
+
+        /* Layout */
+        .layout {
+            position: relative;
+            z-index: 5;
+            display: grid;
+            grid-template-columns: 260px 1fr 260px;
+            gap: 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem 4rem;
+            align-items: start;
+        }
+
+        /* Navbar */
+        nav {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        .nav-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #9b6aff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .btn-logout {
+            padding: 0.4rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn-logout:hover {
+            border-color: #ff6ab0;
+            color: #ff6ab0;
+        }
+
+        /* Sidebar left — user card */
+        .sidebar-left {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .user-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.8rem 1.5rem;
+            text-align: center;
+        }
+
+        .user-avatar-lg {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #9b6aff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #fff;
+            margin: 0 auto 1rem;
+            box-shadow: 0 0 30px rgba(124, 106, 255, 0.4);
+        }
+
+        .user-card h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .user-card .handle {
+            font-size: 0.8rem;
+            color: var(--accent);
+            margin-bottom: 1.2rem;
+        }
+
+        .user-stats {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-num {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--muted);
+            margin-top: 0.1rem;
+        }
+
+        /* Sidebar right — tips */
+        .sidebar-right {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .tips-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+        }
+
+        .tips-card h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--muted);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tip {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            margin-bottom: 0.9rem;
+        }
+
+        .tip-icon {
+            font-size: 1rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .tip p {
+            font-size: 0.8rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        /* Main feed */
+        .feed {
+            min-width: 0;
+        }
+
+        /* Composer */
+        .composer {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: border-color 0.3s;
+        }
+
+        .composer:focus-within {
+            border-color: rgba(124, 106, 255, 0.5);
+        }
+
+        .composer-top {
+            display: flex;
+            gap: 0.8rem;
+            align-items: flex-start;
+        }
+
+        .composer-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: linear-gradient(135deg, var(--accent), #9b6aff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .composer textarea {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            resize: none;
+            min-height: 80px;
+            line-height: 1.6;
+        }
+
+        .composer textarea::placeholder {
+            color: var(--muted);
+        }
+
+        .composer-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .composer-hint {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .btn-post {
+            padding: 0.55rem 1.4rem;
+            background: linear-gradient(135deg, var(--accent), #9b6aff);
+            border: none;
+            border-radius: 999px;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 0 16px rgba(124, 106, 255, 0.35);
+        }
+
+        .btn-post:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 0 28px rgba(124, 106, 255, 0.55);
+        }
+
+        /* Feed header */
+        .feed-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.2rem;
+        }
+
+        .feed-header h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .post-count {
+            font-size: 0.75rem;
+            color: var(--muted);
+            background: var(--surface2);
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+        }
+
+        /* Post card */
+        .post-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 1.4rem 1.5rem;
+            margin-bottom: 1rem;
+            transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+            animation: slideIn 0.4s ease both;
+        }
+
+        .post-card:hover {
+            border-color: rgba(124, 106, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.9rem;
+        }
+
+        .post-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .post-meta {
+            flex: 1;
+        }
+
+        .post-author {
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .post-handle {
+            font-size: 0.75rem;
+            color: var(--accent);
+        }
+
+        .post-time {
+            font-size: 0.72rem;
+            color: var(--muted);
+        }
+
+        .post-body {
+            font-size: 0.95rem;
+            color: #d0d0e0;
+            line-height: 1.7;
+            margin-bottom: 1.1rem;
+            padding-left: calc(38px + 0.75rem);
+        }
+
+        .post-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding-left: calc(38px + 0.75rem);
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.9rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .like-btn {
+            color: var(--muted);
+        }
+
+        .like-btn:hover {
+            background: rgba(255, 106, 176, 0.1);
+            border-color: rgba(255, 106, 176, 0.3);
+            color: #ff6ab0;
+        }
+
+        .like-btn.liked {
+            color: #ff6ab0;
+            background: rgba(255, 106, 176, 0.1);
+            border-color: rgba(255, 106, 176, 0.25);
+        }
+
+        .edit-btn {
+            color: var(--muted);
+        }
+
+        .edit-btn:hover {
+            background: rgba(124, 106, 255, 0.1);
+            border-color: rgba(124, 106, 255, 0.3);
+            color: var(--accent);
+        }
+
+        .delete-btn {
+            color: var(--muted);
+        }
+
+        .delete-btn:hover {
+            background: rgba(255, 80, 80, 0.1);
+            border-color: rgba(255, 80, 80, 0.3);
+            color: #ff5555;
+        }
+
+        /* Owner badge */
+        .owner-badge {
+            margin-left: auto;
+            font-size: 0.65rem;
+            color: var(--accent);
+            background: rgba(124, 106, 255, 0.1);
+            border: 1px solid rgba(124, 106, 255, 0.2);
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+            font-weight: 600;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--muted);
+        }
+
+        .empty-state .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state p {
+            font-size: 0.9rem;
+        }
+
+        /* Divider */
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0.5rem 0 1.2rem;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar-left,
+            .sidebar-right {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="bg-glow"></div>
+
+    <% var initials=loggedInUser.username.substring(0,2).toUpperCase(); var
+        avatarColors=[ 'linear-gradient(135deg,#7c6aff,#9b6aff)' , 'linear-gradient(135deg,#ff6ab0,#ff8c6a)'
+        , 'linear-gradient(135deg,#6affe0,#6ab0ff)' , 'linear-gradient(135deg,#ffb86a,#ff6a6a)'
+        , 'linear-gradient(135deg,#6affb8,#6a8aff)' ]; var colorIndex=loggedInUser.username.charCodeAt(0) %
+        avatarColors.length; var myColor=avatarColors[colorIndex]; %>
+
+        <!-- Navbar -->
+        <nav>
+            <div class="logo">Whispr</div>
+            <div class="nav-right">
+                <div class="nav-user">
+                    <div class="nav-avatar">
+                        <%= initials %>
+                    </div>
+                    <span>@<%= loggedInUser.username %></span>
+                </div>
+                <a class="btn-logout" href="/logout">Log out</a>
+            </div>
+        </nav>
+
+        <div class="layout">
+
+            <!-- Left sidebar -->
+            <aside class="sidebar-left">
+                <div class="user-card">
+                    <div class="user-avatar-lg" ">
+                        <%= initials %>
+                    </div>
+                    <h2>
+                        <%= loggedInUser.name %>
+                    </h2>
+                    <div class=" handle">@<%= loggedInUser.username %>
+                    </div>
+                    <div class="user-stats">
+                        <div class="stat">
+                            <div class="stat-num">
+                                <%= posts.filter(function(p){ return p.user._id.toString()===loggedInUser._id.toString()
+                                    }).length %>
+                            </div>
+                            <div class="stat-label">Posts</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-num">
+                                <%= posts.reduce(function(acc,p){ return acc + p.likes.length }, 0) %>
+                            </div>
+                            <div class="stat-label">Total Likes</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main feed -->
+            <main class="feed">
+
+                <!-- Composer -->
+                <form action="/post" method="post">
+                    <div class="composer">
+                        <div class="composer-top">
+                            <div class="composer-avatar">
+                                <%= initials %>
+                            </div>
+                            <textarea name="content"
+                                placeholder="What's on your mind? Share a thought, feeling or idea..."
+                                required></textarea>
+                        </div>
+                        <div class="composer-bottom">
+                            <span class="composer-hint">✨ Express yourself freely</span>
+                            <button class="btn-post" type="submit">Whispr it →</button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Feed header -->
+                <div class="feed-header">
+                    <h2>Latest Whispers</h2>
+                    <span class="post-count">
+                        <%= posts.length %> post<%= posts.length !==1 ? 's' : '' %>
+                    </span>
+                </div>
+
+                <!-- Posts -->
+                <% if(posts.length===0){ %>
+                    <div class="empty-state">
+                        <div class="empty-icon">💭</div>
+                        <p>No whispers yet. Be the first to share something!</p>
+                    </div>
+                    <% } %>
+
+                        <% posts.forEach(function(post, i){ %>
+                            <% var pInitials=post.user.username.substring(0,2).toUpperCase(); var
+                                pColorIndex=post.user.username.charCodeAt(0) % avatarColors.length; var
+                                pColor=avatarColors[pColorIndex]; var
+                                isOwner=post.user._id.toString()===loggedInUser._id.toString(); var
+                                alreadyLiked=post.likes.map(function(id){ return id.toString();
+                                }).includes(loggedInUser._id.toString()); %>
+                                <div class="post-card">
+                                    <div class="post-header">
+                                        <div class="post-avatar">
+                                            <%= pInitials %>
+                                        </div>
+                                        <div class="post-meta">
+                                            <div class="post-author">
+                                                <%= post.user.name || post.user.username %>
+                                            </div>
+                                            <div class="post-handle">@<%= post.user.username %>
+                                            </div>
+                                        </div>
+                                        <% if(isOwner){ %>
+                                            <span class="owner-badge">You</span>
+                                            <% } %>
+                                    </div>
+
+                                    <div class="post-body">
+                                        <%= post.content %>
+                                    </div>
+
+                                    <div class="post-actions">
+                                        <a class="action-btn like-btn <%= alreadyLiked ? 'liked' : '' %>"
+                                            href="/like/<%= post._id %>">
+                                            <span class="heart">
+                                                <%= alreadyLiked ? '❤️' : '🤍' %>
+                                            </span>
+                                            <span class="count">
+                                                <%= post.likes.length %>
+                                            </span>
+                                            <span class="label">Like<%= post.likes.length !==1 ? 's' : '' %></span>
+                                        </a>
+
+                                        <% if(isOwner){ %>
+                                            <a class="action-btn edit-btn" href="/edit/<%= post._id %>">✏️ Edit</a>
+                                            <a class="action-btn delete-btn" href="/delete/<%= post._id %>">🗑️
+                                                Delete</a>
+                                            <% } %>
+                                    </div>
+                                </div>
+                                <% }) %>
+
+            </main>
+
+            <!-- Right sidebar -->
+            <aside class="sidebar-right">
+                <div class="tips-card">
+                    <h3>💡 Whispr Tips</h3>
+                    <div class="tip">
+                        <span class="tip-icon">❤️</span>
+                        <p>Like posts that resonate with you — it means a lot to the author.</p>
+                    </div>
+                    <div class="tip">
+                        <span class="tip-icon">✏️</span>
+                        <p>You can edit or delete your own posts anytime.</p>
+                    </div>
+                    <div class="tip">
+                        <span class="tip-icon">💬</span>
+                        <p>Be authentic. The best whispers come straight from the heart.</p>
+                    </div>
+                    <div class="tip">
+                        <span class="tip-icon">🔒</span>
+                        <p>Only you can edit or delete your own posts.</p>
+                    </div>
+                </div>
+            </aside>
+
+        </div>
+
+        <script>
+            // Handle Likes without Refresh
+            document.addEventListener('click', async function (e) {
+                const likeBtn = e.target.closest('.like-btn');
+                if (!likeBtn) return;
+
+                // Prevent the page from reloading
+                e.preventDefault();
+
+                const url = likeBtn.href;
+                const heart = likeBtn.querySelector('.heart');
+                const count = likeBtn.querySelector('.count');
+                const label = likeBtn.querySelector('.label');
+
+                try {
+                    const response = await fetch(url, {
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    const data = await response.json();
+
+                    if (data.success !== false) {
+                        // Update Heart Emoji
+                        heart.textContent = data.liked ? '❤️' : '🤍';
+
+                        // Update Class for styling
+                        if (data.liked) {
+                            likeBtn.classList.add('liked');
+                        } else {
+                            likeBtn.classList.remove('liked');
+                        }
+
+                        // Update Count
+                        count.textContent = data.count;
+
+                        // Update Pluralization
+                        label.textContent = data.count === 1 ? ' Like' : ' Likes';
+                    }
+                } catch (err) {
+                    console.error('Error liking post:', err);
+                    // Fallback: If JS fails, just do a normal redirect
+                    window.location.href = url;
+                }
+            });
+        </script>
+
+</body>
+
+</html>
