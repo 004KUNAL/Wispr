@@ -1,0 +1,233 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import "tailwindcss";
+
+/* ── Custom Cyberpunk Design Tokens ── */
+:root {
+  --neon-cyan: #00f5ff;
+  --neon-purple: #bf00ff;
+  --neon-pink: #ff0090;
+  --neon-green: #39ff14;
+  --neon-orange: #ff6b00;
+  --bg-void: #020408;
+  --bg-dark: #08090f;
+  --bg-card: rgba(255,255,255,0.03);
+  --bg-card-hover: rgba(255,255,255,0.06);
+  --border-glow: rgba(0,245,255,0.15);
+  --text-primary: #e8eaf6;
+  --text-secondary: #8892a4;
+  --text-muted: #4a5568;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg-void);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar Styling ── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 10px; }
+
+/* ── Neon Text ── */
+.neon-text-cyan { color: var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan), 0 0 30px rgba(0,245,255,0.3); }
+.neon-text-purple { color: var(--neon-purple); text-shadow: 0 0 10px var(--neon-purple), 0 0 30px rgba(191,0,255,0.3); }
+.neon-text-pink { color: var(--neon-pink); text-shadow: 0 0 10px var(--neon-pink), 0 0 30px rgba(255,0,144,0.3); }
+.neon-text-green { color: var(--neon-green); text-shadow: 0 0 10px var(--neon-green), 0 0 30px rgba(57,255,20,0.3); }
+
+/* ── Glassmorphism ── */
+.glass {
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.glass-hover:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(0,245,255,0.2);
+  transition: all 0.3s ease;
+}
+.glass-card {
+  background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+  backdrop-filter: blur(24px);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+}
+
+/* ── Glow Effects ── */
+.glow-cyan { box-shadow: 0 0 20px rgba(0,245,255,0.3), 0 0 60px rgba(0,245,255,0.1); }
+.glow-purple { box-shadow: 0 0 20px rgba(191,0,255,0.3), 0 0 60px rgba(191,0,255,0.1); }
+.glow-pink { box-shadow: 0 0 20px rgba(255,0,144,0.3), 0 0 60px rgba(255,0,144,0.1); }
+
+/* ── Gradient Backgrounds ── */
+.gradient-cyber {
+  background: linear-gradient(135deg, #020408 0%, #0a0a1a 50%, #050510 100%);
+}
+.gradient-text-cyber {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.gradient-border {
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple), var(--neon-pink));
+  z-index: -1;
+  opacity: 0.4;
+}
+
+/* ── Avatar Styles ── */
+.avatar-cyber { background: linear-gradient(135deg, #00f5ff, #bf00ff); }
+.avatar-ghost { background: linear-gradient(135deg, #4a5568, #1a202c); }
+.avatar-neon { background: linear-gradient(135deg, #ff0090, #ff6b00); }
+.avatar-shadow { background: linear-gradient(135deg, #1a0530, #0d001a); }
+.avatar-void { background: linear-gradient(135deg, #000, #1a0530); }
+
+/* ── Mood Badge Colors ── */
+.mood-happy { color: #ffd700; }
+.mood-sad { color: #6495ed; }
+.mood-angry { color: #ff4444; }
+.mood-anxious { color: #ff8c00; }
+.mood-excited { color: #39ff14; }
+.mood-numb { color: #9370db; }
+.mood-confused { color: #ff69b4; }
+.mood-hopeful { color: #00ced1; }
+.mood-dark { color: #8b0000; }
+.mood-peaceful { color: #90ee90; }
+
+/* ── Animated Grid Background ── */
+.cyber-grid {
+  background-image:
+    linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* ── Blurred Media ── */
+.blur-reveal { filter: blur(20px); transition: filter 0.5s ease; cursor: pointer; }
+.blur-reveal:hover { filter: blur(0); }
+
+/* ── Screenshot Prevention ── */
+.no-screenshot { -webkit-user-select: none; user-select: none; }
+
+/* ── Animations ── */
+@keyframes pulse-neon {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes scan-line {
+  0% { top: -5%; }
+  100% { top: 105%; }
+}
+@keyframes glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-3px, 3px); }
+  40% { transform: translate(-3px, -3px); }
+  60% { transform: translate(3px, 3px); }
+  80% { transform: translate(3px, -3px); }
+  100% { transform: translate(0); }
+}
+
+.animate-pulse-neon { animation: pulse-neon 2s ease-in-out infinite; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-glitch:hover { animation: glitch 0.3s ease-in-out; }
+
+/* ── Sidebar ── */
+.sidebar-nav {
+  width: 260px;
+  min-height: 100vh;
+  position: fixed;
+  left: 0; top: 0;
+  z-index: 40;
+}
+
+/* ── Reputation Tier Colors ── */
+.tier-phantom { color: #8892a4; }
+.tier-shadow { color: #9370db; }
+.tier-cipher { color: #00ced1; }
+.tier-ghost { color: #00f5ff; }
+.tier-specter { color: #bf00ff; }
+.tier-wraith { color: #ff0090; }
+.tier-legend { color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+
+/* ── Post Cards ── */
+.post-card {
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.post-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0,245,255,0.2);
+  box-shadow: 0 8px 32px rgba(0,245,255,0.08);
+}
+
+/* ── Input Styles ── */
+.cyber-input {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-primary);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+  font-family: 'Outfit', sans-serif;
+}
+.cyber-input:focus {
+  outline: none;
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 0 3px rgba(0,245,255,0.1);
+  background: rgba(255,255,255,0.06);
+}
+
+/* ── Button Styles ── */
+.btn-cyber {
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  color: #000;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+.btn-cyber:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,245,255,0.3);
+}
+.btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--text-secondary);
+  border-radius: 10px;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: 'Outfit', sans-serif;
+}
+.btn-ghost:hover {
+  border-color: var(--neon-cyan);
+  color: var(--neon-cyan);
+  background: rgba(0,245,255,0.05);
+}
+
+/* ── Mono text ── */
+.font-mono { font-family: 'JetBrains Mono', monospace; }
